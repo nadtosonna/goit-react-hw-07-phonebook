@@ -1,61 +1,22 @@
-import { useState } from 'react';
 import { AiOutlinePlusCircle } from 'react-icons/ai';
-import { useDispatch, useSelector } from 'react-redux';
-import { getContacts } from '../../redux/selectors';
-import { addContact } from '../../redux/contacts/contacts-slice';
-import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import css from './ContactForm.module.css';
+import useForm from 'shared/hooks/useForm';
 
-export const ContactForm = () => {
-    const initialState = {
+const initialState = {
     name: '',
     number: '',
 }
-    const [state, setState] = useState(initialState);
+export const ContactForm = ({onSubmit}) => {
+    const { state, handleChange, handleSubmit } = useForm({ initialState, onSubmit });
 
-    const dispatch = useDispatch();
-    const contacts = useSelector(getContacts);
-
-    const handleAddContact = contact => {
-        dispatch(addContact(contact));
-    };
-
-    const handleSubmit = event => {
-        event.preventDefault();
-
-        const existingName = contacts.find(contact =>
-            contact.name.toLowerCase() === state.name.toLowerCase());
-        const existingNumber = contacts.find(contact => contact.number === state.number);
-
-        if (existingName || existingNumber) {
-            Notify.failure('This contact is already existing in the phonebook!', {
-                position: 'center-top',
-                width: '380px',
-                distance: '30px',
-            });
-            return;
-        };
-
-        handleAddContact(state);
-        setState(initialState);
-    };
-
-    const handleChange = event => {
-        const { name, value } = event.currentTarget;
-        setState((prev) => {
-            return {
-                ...prev,
-                [name]: value,
-            }
-        })
-    };
+    const { name, number } = state;
 
     return (
         <form onSubmit={handleSubmit} className={css.form}>
             <div className={css.wrapper}>
                 <div className={css.nameBlock}>
                     <input
-                        value={state.name}
+                        value={name}
                         onChange={handleChange}
                         type="text"
                         name="name"
@@ -68,7 +29,7 @@ export const ContactForm = () => {
                 </div>
                 <div className={css.numberBlock}>
                     <input
-                        value={state.number}
+                        value={number}
                         onChange={handleChange}
                         type="tel"
                         name="number"

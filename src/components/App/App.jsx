@@ -1,30 +1,52 @@
+import { Loader } from "components/Loader/Loader";
+import { Notify } from "notiflix";
+import { useFetchContactsQuery, useAddContactMutation, useRemoveContactMutation } from "redux/contacts/contacts-api";
 import { ContactForm } from "../ContactForm/ContactForm";
 import { ContactList } from "../ContactList/ContactList";
 import { SearchFilter } from "../SearchFilter/SearchFilter";
 import { Section } from '../Section/Section';
 import css from './App.module.css';
-import { getContacts, getFilter } from "../../redux/selectors";
-import { useSelector } from "react-redux";
 
 export const App = () => {
+  const { data = [], isLoading, isSuccess, error } = useFetchContactsQuery();
+  const [addContact] = useAddContactMutation();
+  const [removeContact] = useRemoveContactMutation();
 
-  const contacts = useSelector(getContacts);
-  const filter = useSelector(getFilter);
+  const onAddContact = (contact) => {
+    const contactArray = data.map(item => item.name.toLowerCase());
+    const isExisting = contactArray.includes(contact.name.toLowerCase());
 
-  const contactsToDisplay = contacts.filter(contact =>
-    contact.name.toLowerCase().includes(filter.toLowerCase()) || contact.number.includes(filter));
-  
+    if (!isExisting) {
+      addContact(contact);
+      Notify.success('Contact ia added in the phonebook!', {
+                position: 'center-top',
+                width: '380px',
+                distance: '10px',
+            });
+    } else {
+      Notify.failure('This contact is already existing in the phonebook!', {
+                position: 'center-top',
+                width: '380px',
+                distance: '10px',
+            });
+    }
+  }
+
+  const onRemoveContact = (id) => {
+    removeContact(id);
+  }
+
   return (
       <div className={css.container}>
         <Section title="Phonebook">
-           <ContactForm />
+           <ContactForm onSubmit={onAddContact} />
         </Section>
         <Section title="Contacts">
-          <SearchFilter />
-        {contacts.length > 0 ?
-          (<ContactList contacts={contactsToDisplay} />) :
-          <p className={css.emptyList}>Your Contact List is empty.</p>}
-        </Section>
+        <SearchFilter />
+        {isSuccess && data.length > 0 && <ContactList contacts={data} removeContact={onRemoveContact} />}
+      </Section>
+      {isLoading && <Loader />}
+      {error && <p className={css.error}>OOPS! Something went wrong! Please try again later!</p>}
       </div>
     );
 }

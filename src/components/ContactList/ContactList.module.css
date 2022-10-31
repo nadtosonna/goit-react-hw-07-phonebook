@@ -1,7 +1,12 @@
 .contactList {
     margin-top: 60px;
+    display: flex;
+    flex-direction: column;
+    column-count: 2;
+    align-items: center;
 }
 .item {
+    width: 500px;
     display: flex;
     justify-content: space-between;
     align-items: center;

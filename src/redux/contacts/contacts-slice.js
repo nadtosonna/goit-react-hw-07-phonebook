@@ -1,50 +1,35 @@
-import { createSlice, nanoid } from '@reduxjs/toolkit';
-import { persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
+import { createSlice } from '@reduxjs/toolkit';
+import { pendingCallback, rejectedCallback } from 'shared/helpers/redux';
+import { fetchContacts, addContact, removeContact } from './contacts-operations';
 
-export const contactsSlice = createSlice({
-  name: 'contacts',
-  initialState: {
+const initialState = {
     contacts: [],
-    isLoading: false,
+    loading: false,
     error: null,
-    filter: '',
-  },
-  reducers: {
-    addContact: {
-      reducer: (state, action) => {
-        state.contacts.push(action.payload);
-      },
-      prepare: (data) => {
-        return {
-          payload: {
-            ...data,
-            id: nanoid(),
-        }
-      }
-    },
-    },
+}
 
-    deleteContact: (state, action) => {
-      state.contacts = state.contacts.filter(contact => contact.id !== action.payload);
-    },
-
-    filterContacts: (state, action) => {
-      state.filter = action.payload;
-    },
+const contactsSlice = createSlice({
+  name: 'contacts',
+  initialState,
+  extraReducers: {
+    [fetchContacts.pending]: pendingCallback,
+    [fetchContacts.fulfilled]: (store, { payload }) => {
+      store.loading = false;
+      store.contacts = payload;
+    }
   },
+  [fetchContacts.rejected]: rejectedCallback,
+  [addContact.pending]: pendingCallback,
+  [addContact.fulfilled]: (store, { payload }) => {
+    store.loading = false;
+    store.contacts.push(payload);
+  },
+  [addContact.rejected]: rejectedCallback,
+  [removeContact.pending]: pendingCallback,
+  [removeContact.fulfilled]: (store, { payload }) => {
+    store.loading = false;
+    store.contacts = store.contacts.filter(contact => contact.id !== payload);
+  }
 });
 
-const persistConfig = {
-  key: 'contacts',
-  storage,
-  blacklist: ['filter'],
-};
-
-export const contactsReducer = persistReducer(
-  persistConfig,
-  contactsSlice.reducer
-);
-
-export const { addContact, deleteContact, filterContacts } =
-  contactsSlice.actions;
+export default contactsSlice.reducer;

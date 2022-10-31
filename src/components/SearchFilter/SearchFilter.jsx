@@ -1,15 +1,16 @@
 import { AiOutlineFileSearch } from 'react-icons/ai';
 import { useDispatch, useSelector } from 'react-redux';
-import { filterContacts } from '../../redux/contacts/contacts-slice';
+import { setFilter } from 'redux/filter/filter-actions';
 import { getFilter } from '../../redux/selectors';
 import css from './SearchFilter.module.css';
 
 export const SearchFilter = () => {
     const dispatch = useDispatch();
     const filter = useSelector(getFilter);
-    
-    const handleSearchFilter = event => {
-        dispatch(filterContacts(event.target.value))
+
+    const handleChange = (event) => {
+        const { value } = event.target;
+        dispatch(setFilter(value));
     }
 
     return (
@@ -19,7 +20,7 @@ export const SearchFilter = () => {
                 type="text"
                 name="search"
                 value={filter}
-                onChange={handleSearchFilter}
+                onChange={handleChange}
                 placeholder="Enter contact name..."
                 required
             />
