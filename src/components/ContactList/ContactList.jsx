@@ -1,11 +1,24 @@
 import { AiOutlineMinusCircle } from 'react-icons/ai';
+import { useSelector } from 'react-redux';
+import { getFilter } from 'redux/selectors';
 import css from './ContactList.module.css';
-import Avatar from 'react-avatar';
 
 export const ContactList = ({ contacts, removeContact }) => {
-    const elements = contacts?.map(({ id, name, number }) => (
+    const filter = useSelector(getFilter);
+
+    const filterContacts = () => {
+        return (
+            contacts && contacts.filter(contact =>
+                contact.name.toLowerCase()
+                    .includes(filter.toLowerCase()) || contact.number.includes(filter))
+        );
+    };
+
+    const filteredContacts = filterContacts();
+
+    const elements = filteredContacts?.map(({ id, name, number, avatar }) => (
         <li key={id} id={id} className={css.item}>
-            <Avatar name={name} round={true} size="35" />
+            <img src={avatar} alt="" className={css.img} />
             <p className={css.contact}>{`${name}: ${number}`}</p>
             <button onClick={() => removeContact(id)} className={css.delBtn}>
                 <AiOutlineMinusCircle size={30} />

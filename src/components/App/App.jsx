@@ -42,9 +42,9 @@ export const App = () => {
            <ContactForm onSubmit={onAddContact} />
         </Section>
         <Section title="Contacts">
-        <SearchFilter />
-        {isSuccess && data.length > 0 && <ContactList contacts={data} removeContact={onRemoveContact} />}
-      </Section>
+          <SearchFilter />
+          {isSuccess && data.length > 0 && <ContactList contacts={data} removeContact={onRemoveContact} />}
+        </Section>
       {isLoading && <Loader />}
       {error && <p className={css.error}>OOPS! Something went wrong! Please try again later!</p>}
       </div>

@@ -29,3 +29,8 @@
     color: #E72323;
     scale: 1.2;
 }
+.img {
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+}
