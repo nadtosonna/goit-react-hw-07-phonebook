@@ -1,15 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { Notify } from 'notiflix';
 import * as api from '../../shared/api/contacts';
-
-const isExisting = ({name, number}, contacts) => {
-    const normalizedName = name.toLowerCase();
-
-    const result = contacts.find(contact => {
-        return (normalizedName === contact.name.toLowerCase() && number === contact.number.toLowerCase())
-    });
-    return Boolean(result);
-}
 
 export const fetchContacts = createAsyncThunk(
     "contacts/fetch",
@@ -33,14 +23,6 @@ export const addContact = createAsyncThunk(
             return rejectWithValue(error);
         }
     },
-    {
-        condition: (data, { getState }) => {
-            const { contacts } = getState();
-            if (isExisting(data, contacts.contacts)) {
-                Notify.failure('This contact already exists!')
-            }
-        }
-    }
 );
 
 export const removeContact = createAsyncThunk(

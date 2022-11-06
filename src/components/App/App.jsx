@@ -13,18 +13,18 @@ export const App = () => {
   const [removeContact] = useRemoveContactMutation();
 
   const onAddContact = (contact) => {
-    const contactArray = data.map(item => item.name.toLowerCase());
-    const isExisting = contactArray.includes(contact.name.toLowerCase());
+    const isExisting = data.find(item => item.name.toLowerCase() === contact.name.toLowerCase());
 
-    if (!isExisting) {
-      addContact(contact);
-      Notify.success('Contact ia added in the phonebook!', {
+    if (isExisting) {
+      Notify.failure('This contact is already existing in the phonebook!', {
                 position: 'center-top',
                 width: '380px',
                 distance: '10px',
-            });
+      });
+      return;
     } else {
-      Notify.failure('This contact is already existing in the phonebook!', {
+      addContact(contact);
+      Notify.success('Contact ia added in the phonebook!', {
                 position: 'center-top',
                 width: '380px',
                 distance: '10px',
